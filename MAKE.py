@@ -1,6 +1,4 @@
-import time
-import datetime
+from openpyxl import load_workbook
 
-#input scheduled time
-alarm = input()
-alarm.strftime("%B %d, %Y")
+wb = load_workbook('movie_optimization.xlsx')
+print(wb.sheetnames())
