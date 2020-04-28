@@ -1,4 +1,3 @@
-#import numpy as np
 import pandas as pd
 
 print('Please enter your preferences with digits between 0 to 10.')
