@@ -1,9 +1,30 @@
-from openpyxl import load_workbook
+#import numpy as np
+import pandas as pd
 
-print('Opening results from the workbook...')
+print('Please enter your preferences with digits between 0 to 10.')
 
-wb = load_workbook(filename = 'movie_optimization.xlsm', read_only=True)
-ws = wb['result']
-for row in ws.rows:
-    for cell in row:
-        print(cell.value)
+comedy = input('Comedy ')
+action = input('Action ')
+thriller = input('Thriller ')
+romance = input('Romance ')
+scifi = input('Sci-fi ')
+reality = input('Reality ')
+documentary = input('Documentary ')
+kids = input('Kids ')
+animation = input('Animation ')
+horror = input('Horror ')
+drama = input('Drama ')
+
+genres = pd.Series({'Comedy': comedy,
+                    'Action': action,
+                    'Thriller': thriller,
+                    'Romance': romance,
+                    'Sci-fi': scifi,
+                    'Reality': reality,
+                    'Documentary': documentary,
+                    'Kids': kids,
+                    'Animation': animation,
+                    'Horror': horror,
+                    'Drama': drama})
+
+print(genres.head(11))
