@@ -34,13 +34,29 @@ def get_MovieList(API):
         response.raise_for_status()
         jsonData = json.loads(response.text)
         if jsonData['total_results'] > 1:
+            print("There are multiple films that matches your search which is the one...")
+            title = []
+            release_date = []
+            overview = []
             for t in jsonData['results']:
-                print(t['title'])
-                print(t['release_date'])
-                print(t['overview'])
-                input('Is this a film you watched?')
+                title.append(t['title'])
+                try:
+                    release_date.append(str(t['release_date']))
+                except:
+                    release_date.append('NA')
+                overview.append(t['overview'])
 
-        user_response.append(input().lower())
+            verify_list = pd.DataFrame({'title': title,
+                         'release_date': release_date})
+                         #'overview': overview})
+            pd.set_option("display.max_rows", None, "display.max_columns", None)
+            print(verify_list)
+            print('Please enter the ID number of a film you\'re looking for: ', end='')
+            idNumber = int(input())
+            title_df = verify_list.get('title')
+            user_response.append(title_df[idNumber])
+            print(user_response)
+
         print('> Movies you\'re searching for: %s' % user_response)
 
     return user_response
@@ -77,7 +93,7 @@ def test(API, userDF):
 API = get_API()
 movie_list = get_MovieList(API)
 userDF = get_MovieRating(movie_list)
-test(API, userDF)
+print(userDF)
 
 # Create_Matrix() <- We need a function to combine name of the films and the ratings into one matrix
 
