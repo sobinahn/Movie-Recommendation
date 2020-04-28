@@ -2,7 +2,6 @@ APIKey = "05ff55684cb55f443d41d5558c15d6bb"
 
 import json, requests, pprint as pr, time, pandas as pd, numpy as np
 
-genre = 'Comedy Thriller Drama Musical Horror Documentary Sci-fi Adventure Crime Animation Romance'.split()
 
 def get_API():
     print('Please get your API key from https://developers.themoviedb.org/3/getting-started/introduction')
@@ -25,7 +24,8 @@ def get_MovieList(API):
 
     # Taking keywords user want to look for
     print('> Please enter the title of your favorite film one by one!')
-    user_response = []
+    user_movieList = []
+    user_movieID = []
     for i in range(numberofObjects):
         print('Name of the film (with spaces between words): ', end='')
         title_search = input()
@@ -37,7 +37,8 @@ def get_MovieList(API):
             print("There are multiple films that matches your search which is the one...")
             title = []
             release_date = []
-            overview = []
+            overview = [] # plot
+            movie_ID = [] # Unique number for a film
             for t in jsonData['results']:
                 title.append(t['title'])
                 try:
@@ -45,58 +46,52 @@ def get_MovieList(API):
                 except:
                     release_date.append('NA')
                 overview.append(t['overview'])
+                try:
+                    movie_ID.append(t['id'])
+                except:
+                    movie_ID.append('NA')
 
+            userDF = pd.DataFrame({'title': title,
+                         'release_date': release_date, 'movie_ID': movie_ID})
+            pd.set_option("display.max_rows", None, "display.max_columns", None)
+
+            # Verify_list is a Dataframe that contains the title and the release date of films that users selected
             verify_list = pd.DataFrame({'title': title,
                          'release_date': release_date})
                          #'overview': overview})
-            pd.set_option("display.max_rows", None, "display.max_columns", None)
             print(verify_list)
             print('Please enter the ID number of a film you\'re looking for: ', end='')
-            idNumber = int(input())
-            title_df = verify_list.get('title')
-            user_response.append(title_df[idNumber])
-            print(user_response)
 
-        print('> Movies you\'re searching for: %s' % user_response)
+            idNumber = int(input())
+            title_df = userDF.get('title')
+            id_df = userDF.get('movie_ID')
+            user_movieList.append(title_df[idNumber])
+            user_movieID.append(id_df[idNumber])
+
+            #Creating a DataFrame that contains the titles and IDs for films
+            user_response = pd.DataFrame({'Title': user_movieList, 'Movie ID': user_movieID})
+
+        print('> Movies you\'re searching for: %s' % user_movieList)
+    print(user_response)
 
     return user_response
 
-def get_MovieRating(movie_list):
+def get_MovieRating(movie_DF):
     print('Now, can you please give rating for the movies you mentioned?')
     user_rating = []
-    for i in range(len(movie_list)):
-        print('What is your rating for the film %s: ' %(movie_list[i]), end = '')
+    movie_titles = movie_DF.get('Title')
+
+    for i in range(len(movie_titles)):
+        print('What is your rating for the film %s: ' %(movie_titles[i]), end = '')
         user_rating.append(input())
-    df= pd.DataFrame({'Movie Title': movie_list,'User Rating': user_rating})
-    return df
+    rating_DF = pd.DataFrame({'User Rating': user_rating})
+    DF = pd.concat([movie_DF, rating_DF], axis=1)
+
+    return DF
 
 
-
-
-
-def test(API, userDF):
-    url = 'https://api.themoviedb.org/3/movie/550?api_key=' + str(API)
-    response = requests.get(url)
-    response.raise_for_status()
-    jsonData = json.loads(response.text)
-    pr.pprint(jsonData)
-
-
-    language = jsonData['original_language']
-    title = jsonData['original_title']
-    plot = jsonData['overview']
-    rating = jsonData['vote_average']
-
-    pr.pprint(plot)
-    print(type(plot))
 
 API = get_API()
-movie_list = get_MovieList(API)
-userDF = get_MovieRating(movie_list)
+movie_DF = get_MovieList(API)
+userDF = get_MovieRating(movie_DF)
 print(userDF)
-
-# Create_Matrix() <- We need a function to combine name of the films and the ratings into one matrix
-
-
-
-
