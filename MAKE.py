@@ -98,11 +98,11 @@ print(userDF)
 
 
 def get_Genre(API):
-    url2 = 'https://api.themoviedb.org/3/genre/movie/list?api_key=' + API + '&language=en-US'
+    language = '&language=en-US'
+    url2 = 'https://api.themoviedb.org/3/genre/movie/list?api_key=' + API + language
     response = requests.get(url2)
     response.raise_for_status()
     jsonData = json.loads(response.text)
-    print(jsonData)
 
     return jsonData
 
