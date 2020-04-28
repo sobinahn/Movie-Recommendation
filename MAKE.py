@@ -20,8 +20,15 @@ def get_MovieList(API):
     print('> More films you tell me, the better recommendation is going to be.''')
     #time.sleep(1)
     print('> How many favorite films do you want to tell me:' ,end='')
-    numberofObjects = input()
-    numberofObjects = int(numberofObjects)
+    while True:
+    try:
+        numberofObjects = input()
+        numberofObjects = int(numberofObjects)
+    except ValueError:
+        print('Please enter a digit.')
+        continue
+    else:
+        break
 
     # Taking keywords user want to look for
     print('> Please enter the title of your favorite film one by one!')
