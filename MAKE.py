@@ -11,7 +11,7 @@ def get_API():
     return API
 
 
-def get_MovieList():
+def get_MovieList(API):
 # This function will ask recent movies/TV shows users watched and liked.
 # Users will provide title of the movies/TV shows, and provide rating to them.
 
@@ -28,6 +28,18 @@ def get_MovieList():
     user_response = []
     for i in range(numberofObjects):
         print('Name of the film (with spaces between words): ', end='')
+        title_search = input()
+        url = 'https://api.themoviedb.org/3/search/movie?api_key=%s&language=en-US&query=%s&page=1&include_adult=true'%(API, title_search)
+        response = requests.get(url)
+        response.raise_for_status()
+        jsonData = json.loads(response.text)
+        if jsonData['total_results'] > 1:
+            for t in jsonData['results']:
+                print(t['title'])
+                print(t['release_date'])
+                print(t['overview'])
+                input('Is this a film you watched?')
+
         user_response.append(input().lower())
         print('> Movies you\'re searching for: %s' % user_response)
 
@@ -39,13 +51,14 @@ def get_MovieRating(movie_list):
     for i in range(len(movie_list)):
         print('What is your rating for the film %s: ' %(movie_list[i]), end = '')
         user_rating.append(input())
-    print(user_rating)
+    df= pd.DataFrame({'Movie Title': movie_list,'User Rating': user_rating})
+    return df
 
 
 
 
 
-def test(API):
+def test(API, userDF):
     url = 'https://api.themoviedb.org/3/movie/550?api_key=' + str(API)
     response = requests.get(url)
     response.raise_for_status()
@@ -61,10 +74,13 @@ def test(API):
     pr.pprint(plot)
     print(type(plot))
 
-
-movie_list = get_MovieList()
-user_rating = get_MovieRating(movie_list)
 API = get_API()
-test(API)
+movie_list = get_MovieList(API)
+userDF = get_MovieRating(movie_list)
+test(API, userDF)
 
 # Create_Matrix() <- We need a function to combine name of the films and the ratings into one matrix
+
+
+
+
