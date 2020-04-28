@@ -21,14 +21,14 @@ def get_MovieList(API):
     #time.sleep(1)
     print('> How many favorite films do you want to tell me:' ,end='')
     while True:
-    try:
-        numberofObjects = input()
-        numberofObjects = int(numberofObjects)
-    except ValueError:
-        print('Please enter a digit.')
-        continue
-    else:
-        break
+        try:
+            numberofObjects = input()
+            numberofObjects = int(numberofObjects)
+        except ValueError:
+            print('Please enter a digit.')
+            continue
+        else:
+            break
 
     # Taking keywords user want to look for
     print('> Please enter the title of your favorite film one by one!')
@@ -86,7 +86,7 @@ def get_MovieList(API):
     return user_response
 
 def get_MovieRating(movie_DF):
-    print('Now, can you please give rating for the movies you mentioned?')
+    print('Now, please give rating for the movies you mentioned with digits between 1 to 5 (1-bad, 5-great)')
     user_rating = []
     movie_titles = movie_DF.get('Title')
 
@@ -106,7 +106,7 @@ print(userDF)
 
 def get_Genre(API):
     language = '&language=en-US'
-    url2 = 'https://api.themoviedb.org/3/genre/movie/list?api_key=' + API + language
+    url2 = 'https://api.themoviedb.org/3/genre/movie/list?api_key='+API+language
     response = requests.get(url2)
     response.raise_for_status()
     jsonData = json.loads(response.text)
