@@ -94,47 +94,16 @@ def get_MovieRating(movie_DF):
 
     return DF
 
-def get_RecommendationAPI (API, movie_ID, user_rating, movie_DF):
-    language = '&language=en-US&page=1'
-    url3 = 'https://api.themoviedb.org/3/movie' + movie_ID + 'recommendations?api_key='+API+language
-    response = requests.get(url3)
-    response.raise_for_status()
-    jsonData = json.loads(response.text)
-
-    while jsonData['results']:
-        print("Getting movie recommendations...")
-        title = []
-        release_date = []
-        overview = []  # plot
-        movie_ID = []  # Unique number for a film
-        genre_ID = []
-        voteaverage = []
-
-        for r in jsonData['results']:
-            if ['vote_average'] > user_rating:
-                title.append(r['original_title'])
-                try:
-                    release_date.append(str(r['release_date']))
-                except:
-                    release_date.append('NA')
-                try:
-                    overview.append(r['overview'])
-                except:
-                    overview.append('NA')
-
-    #recDF = pd.DataFram({'original_title': title,
-    #                     'release_date': release_date,
-    #                     'overview': overview,
-    #                     'vote_average': voteaverage})
-    #pd.set_option("display.max_rows", None, "display.max_columns", None)
-    #print(recDF)'''
-    return jsonData
-
-'''recommendation = get_RecommendationAPI(API, idNumber)
-print(get_RecommendationAPI(recommendation))'''
-
 API = get_API()
 movie_DF = get_MovieList(API)
 userDF = get_MovieRating(movie_DF)
 print(userDF)
-print(get_RecommendationAPI(API, movie_ID))
+
+def eliminate(userDF, rating_DF, user_rating, movie_DF):
+    while int(rating_DF) < 6 in userDF:
+        list = ['title', 'movie_ID', rating_DF]
+        userDF.drop(index.par[list], axis=0)
+    return userDF
+
+mylist = eliminate(userDF, movie_DF)
+print(mylist)
