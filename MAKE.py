@@ -1,6 +1,26 @@
-APIKey = "05ff55684cb55f443d41d5558c15d6bb"
 
 import json, requests, pprint as pr, time, pandas as pd, numpy as np
+
+APIKey = "05ff55684cb55f443d41d5558c15d6bb"
+genre = {'genres': [{'id': 28, 'name': 'Action'},
+            {'id': 12, 'name': 'Adventure'},
+            {'id': 16, 'name': 'Animation'},
+            {'id': 35, 'name': 'Comedy'},
+            {'id': 80, 'name': 'Crime'},
+            {'id': 99, 'name': 'Documentary'},
+            {'id': 18, 'name': 'Drama'},
+            {'id': 10751, 'name': 'Family'},
+            {'id': 14, 'name': 'Fantasy'},
+            {'id': 36, 'name': 'History'},
+            {'id': 27, 'name': 'Horror'},
+            {'id': 10402, 'name': 'Music'},
+            {'id': 9648, 'name': 'Mystery'},
+            {'id': 10749, 'name': 'Romance'},
+            {'id': 878, 'name': 'Science Fiction'},
+            {'id': 10770, 'name': 'TV Movie'},
+            {'id': 53, 'name': 'Thriller'},
+            {'id': 10752, 'name': 'War'},
+            {'id': 37, 'name': 'Western'}]}
 
 
 def get_API():
@@ -8,7 +28,6 @@ def get_API():
     print('Please enter your API key from TMDB: ', end = '')
     API = input()
     return API
-
 
 def get_MovieList(API):
 # This function will ask recent movies/TV shows users watched and liked.
@@ -18,9 +37,16 @@ def get_MovieList(API):
     #time.sleep(1)
     print('> More films you tell me, the better recommendation is going to be.''')
     #time.sleep(1)
-    print('> How many favorite films do you want to tell me:' ,end='')
-    numberofObjects = input()
-    numberofObjects = int(numberofObjects)
+    print('> How many favorite films do you want to tell me: ' ,end='')
+    while True:
+        try:
+            numberofObjects = input()
+            numberofObjects = int(numberofObjects)
+        except ValueError:
+            print('Please enter number.')
+            continue
+        else:
+            break
 
     # Taking keywords user want to look for
     print('> Please enter the title of your favorite film one by one!')
@@ -39,6 +65,7 @@ def get_MovieList(API):
             release_date = []
             overview = [] # plot
             movie_ID = [] # Unique number for a film
+
             for t in jsonData['results']:
                 title.append(t['title'])
                 try:
@@ -77,7 +104,7 @@ def get_MovieList(API):
     return user_response
 
 def get_MovieRating(movie_DF):
-    print('Now, can you please give rating for the movies you mentioned?')
+    print('Now, please give rating for the movies you mentioned with digits between 1 to 10 (1-bad, 10-great)')
     user_rating = []
     movie_titles = movie_DF.get('Title')
 
@@ -89,9 +116,18 @@ def get_MovieRating(movie_DF):
 
     return DF
 
+def get_averageRating(userDF):
+    rating = userDF.get('User Rating')
+    total_rating = 0
+    
+    for i in range(len(rating)):
+        total_rating += int(rating[i])
+    rating_average = total_rating / len(rating)
 
+    return rating_average
 
 API = get_API()
 movie_DF = get_MovieList(API)
 userDF = get_MovieRating(movie_DF)
 print(userDF)
+rating_average = get_averageRating(userDF)
