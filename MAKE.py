@@ -117,7 +117,7 @@ def get_recommendation(API, userDF):
             recommended_titles.append(t['original_title'])
             release_dates.append(t['release_date'])
             vote_average.append(t['vote_average'])
-            weighted_rating.append(float(t['vote_average'])/float(rating_series[i]))
+            weighted_rating.append((float(t['vote_average'])+float(rating_series[i]))/2)
 
         recommended_DF = pd.DataFrame({'Title': recommended_titles,
                                        'Release date': release_dates,
