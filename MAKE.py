@@ -1,5 +1,3 @@
-APIKey = "05ff55684cb55f443d41d5558c15d6bb"
-
 import json, requests, pprint as pr, time, pandas as pd, numpy as np
 
 
@@ -8,8 +6,6 @@ def get_API():
     print('Please enter your API key from TMDB: ', end = '')
     API = input()
     return API
-
-genre = 'Action Adventure Animation Comedy Crime Documentary Drama Family Fantasy History Horror Music Mystery Romance Science Fiction TV Movie Thriller War Western'.split()
 
 def get_MovieList(API):
 # This function will ask recent movies/TV shows users watched and liked.
@@ -25,7 +21,7 @@ def get_MovieList(API):
             numberofObjects = input()
             numberofObjects = int(numberofObjects)
         except ValueError:
-            print('Please enter a digit.')
+            print('Please enter number.')
             continue
         else:
             break
@@ -98,19 +94,47 @@ def get_MovieRating(movie_DF):
 
     return DF
 
+def get_RecommendationAPI (API, movie_ID, user_rating, movie_DF):
+    language = '&language=en-US&page=1'
+    url3 = 'https://api.themoviedb.org/3/movie' + movie_ID + 'recommendations?api_key='+API+language
+    response = requests.get(url3)
+    response.raise_for_status()
+    jsonData = json.loads(response.text)
+
+    while jsonData['results']:
+        print("Getting movie recommendations...")
+        title = []
+        release_date = []
+        overview = []  # plot
+        movie_ID = []  # Unique number for a film
+        genre_ID = []
+        voteaverage = []
+
+        for r in jsonData['results']:
+            if ['vote_average'] > user_rating:
+                title.append(r['original_title'])
+                try:
+                    release_date.append(str(r['release_date']))
+                except:
+                    release_date.append('NA')
+                try:
+                    overview.append(r['overview'])
+                except:
+                    overview.append('NA')
+
+    #recDF = pd.DataFram({'original_title': title,
+    #                     'release_date': release_date,
+    #                     'overview': overview,
+    #                     'vote_average': voteaverage})
+    #pd.set_option("display.max_rows", None, "display.max_columns", None)
+    #print(recDF)'''
+    return jsonData
+
+'''recommendation = get_RecommendationAPI(API, idNumber)
+print(get_RecommendationAPI(recommendation))'''
+
 API = get_API()
 movie_DF = get_MovieList(API)
 userDF = get_MovieRating(movie_DF)
 print(userDF)
-
-
-def get_Genre(API):
-    language = '&language=en-US'
-    url2 = 'https://api.themoviedb.org/3/genre/movie/list?api_key='+API+language
-    response = requests.get(url2)
-    response.raise_for_status()
-    jsonData = json.loads(response.text)
-
-    return jsonData
-
-get_Genre(API)
+print(get_RecommendationAPI(API, movie_ID))
