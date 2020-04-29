@@ -1,26 +1,6 @@
 import json, requests, pprint as pr, time, pandas as pd, numpy as np
 
 APIKey = "05ff55684cb55f443d41d5558c15d6bb"
-genre = {'genres': [{'id': 28, 'name': 'Action'},
-                    {'id': 12, 'name': 'Adventure'},
-                    {'id': 16, 'name': 'Animation'},
-                    {'id': 35, 'name': 'Comedy'},
-                    {'id': 80, 'name': 'Crime'},
-                    {'id': 99, 'name': 'Documentary'},
-                    {'id': 18, 'name': 'Drama'},
-                    {'id': 10751, 'name': 'Family'},
-                    {'id': 14, 'name': 'Fantasy'},
-                    {'id': 36, 'name': 'History'},
-                    {'id': 27, 'name': 'Horror'},
-                    {'id': 10402, 'name': 'Music'},
-                    {'id': 9648, 'name': 'Mystery'},
-                    {'id': 10749, 'name': 'Romance'},
-                    {'id': 878, 'name': 'Science Fiction'},
-                    {'id': 10770, 'name': 'TV Movie'},
-                    {'id': 53, 'name': 'Thriller'},
-                    {'id': 10752, 'name': 'War'},
-                    {'id': 37, 'name': 'Western'}]}
-
 
 def get_API():
     print('Please get your API key from https://developers.themoviedb.org/3/getting-started/introduction')
@@ -121,28 +101,30 @@ def get_MovieRating(movie_DF):
 
 def get_recommendation(API, userDF):
     ID_series = userDF.get('Movie ID')
+    rating_series = userDF.get('User Rating')
     recommended_titles = []
     release_dates = []
     vote_average = []
+    weighted_rating = []
 
     for i in range(len(ID_series)):
         url = 'https://api.themoviedb.org/3/movie/%s/recommendations?api_key=%s&language=en-US&page=1' %(ID_series[i],API)
         response = requests.get(url)
         response.raise_for_status()
         jsonData = json.loads(response.text)
-        pr.pprint(jsonData)
-        genre = []
 
         for t in jsonData['results']:
             recommended_titles.append(t['original_title'])
             release_dates.append(t['release_date'])
             vote_average.append(t['vote_average'])
+            weighted_rating.append(float(t['vote_average'])/float(rating_series[i]))
 
-        recommended_DF = pd.DataFrame({'Title': recommended_titles, 'Release date': release_dates, 'Vote average': vote_average})
+        recommended_DF = pd.DataFrame({'Title': recommended_titles,
+                                       'Release date': release_dates,
+                                       'Vote average': vote_average,
+                                       'weighted rating': weighted_rating})
 
     return recommended_DF
-
-
 
 
 def eliminate(DF, rating_DF):
@@ -158,7 +140,7 @@ def get_averageRating(userDF):
     total_rating = 0
 
     for i in range(len(rating)):
-        total_rating += int(rating[i])
+        total_rating += float(rating[i])
     rating_average = total_rating / len(rating)
 
     return rating_average
@@ -167,7 +149,7 @@ def get_averageRating(userDF):
 API = get_API()
 movie_DF = get_MovieList(API)
 userDF = get_MovieRating(movie_DF)
-rating_average = get_averageRating(userDF)
+rating_average = get_averageRating(userDF) # Determine pass/fail line
 print(rating_average)
 r_DF = get_recommendation(API, userDF)
 print(r_DF)
