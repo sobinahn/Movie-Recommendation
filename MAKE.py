@@ -99,11 +99,11 @@ movie_DF = get_MovieList(API)
 userDF = get_MovieRating(movie_DF)
 print(userDF)
 
-def eliminate(userDF, rating_DF, user_rating, movie_DF):
-    while int(rating_DF) < 6 in userDF:
-        list = ['title', 'movie_ID', rating_DF]
-        userDF.drop(index.par[list], axis=0)
-    return userDF
+def eliminate(DF, rating_DF):
+    newdata = DF.drop(DF[int(rating_DF) < 6]).ind
+    print (newdata)
 
-mylist = eliminate(userDF, movie_DF)
+    return newdata
+
+mylist = eliminate()
 print(mylist)
