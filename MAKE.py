@@ -28,7 +28,7 @@ def get_MovieList(API):
         else:
             break
 
-    # Taking keywords user want to look for
+    # Taking titles of favorite films
     print('> Please enter the title of your favorite film one by one!')
     user_movieList = []
     user_movieID = []
@@ -100,13 +100,18 @@ def get_MovieRating(movie_DF):
 
 
 def get_recommendation(API, userDF):
+    # This function creates an initial recommendation list based on a user's favorite films
+
     ID_series = userDF.get('Movie ID')
     rating_series = userDF.get('User Rating')
+
+    #4 lists that will be part of the recommended list DataFrame
     recommended_titles = []
     release_dates = []
     vote_average = []
     weighted_rating = []
 
+    # Requesting recommendation using the API
     for i in range(len(ID_series)):
         url = 'https://api.themoviedb.org/3/movie/%s/recommendations?api_key=%s&language=en-US&page=1' %(ID_series[i],API)
         response = requests.get(url)
@@ -117,7 +122,7 @@ def get_recommendation(API, userDF):
             recommended_titles.append(t['original_title'])
             release_dates.append(t['release_date'])
             vote_average.append(t['vote_average'])
-            weighted_rating.append((float(t['vote_average'])+float(rating_series[i]))/2)
+            weighted_rating.append((float(t['vote_average'])+float(rating_series[i]))/2) # Weighting the rating other users voted based on the user's preference.
 
         recommended_DF = pd.DataFrame({'Title': recommended_titles,
                                        'Release date': release_dates,
@@ -126,16 +131,10 @@ def get_recommendation(API, userDF):
 
     return recommended_DF
 
-
-def eliminate(DF, rating_DF):
-    newdata = DF.drop(DF[int(rating_DF) < 6]).ind
-    print (newdata)
-
-    return newdata
-
-
-
 def get_averageRating(userDF):
+    # This function calculate the average rating of users' choice of favorite films.
+    # The computed average will be used as a minimum rating for recommended films to pass the test.
+
     rating = userDF.get('User Rating')
     total_rating = 0
 
@@ -145,11 +144,16 @@ def get_averageRating(userDF):
 
     return rating_average
 
+def eliminate(DF, rating_DF):
+    newdata = DF.drop(DF[int(rating_DF) < 6]).ind
+    print (newdata)
+
+    return newdata
+
 
 API = get_API()
 movie_DF = get_MovieList(API)
 userDF = get_MovieRating(movie_DF)
-rating_average = get_averageRating(userDF) # Determine pass/fail line
-print(rating_average)
-r_DF = get_recommendation(API, userDF)
-print(r_DF)
+favorite_film_average = get_averageRating(userDF)
+recommended_DF = get_recommendation(API, userDF)
+pr.pprint(recommended_DF)
