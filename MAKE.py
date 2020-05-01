@@ -14,9 +14,9 @@ def get_MovieList(API):
     # Users will provide title of the movies/TV shows, and provide rating to them.
 
     print('> To recommend you movies, I need to know list of films and TV shows you enjoyed!')
-    #time.sleep(1.5)
+    time.sleep(1.5)
     print('> More films you tell me, the better recommendation is going to be.''')
-    #time.sleep(1.5)
+    time.sleep(1.5)
     print('> How many favorite films do you want to tell me: ', end='')
     while True:
         try:
