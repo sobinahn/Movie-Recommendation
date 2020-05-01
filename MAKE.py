@@ -14,9 +14,9 @@ def get_MovieList(API):
     # Users will provide title of the movies/TV shows, and provide rating to them.
 
     print('> To recommend you movies, I need to know list of films and TV shows you recently enjoyed!')
-    # time.sleep(1)
+    time.sleep(1)
     print('> More films you tell me, the better recommendation is going to be.''')
-    # time.sleep(1)
+    time.sleep(1)
     print('> How many favorite films do you want to tell me: ', end='')
     while True:
         try:
@@ -145,7 +145,7 @@ def get_averageRating(userDF):
     return rating_average
 
 def eliminate(recommended_DF, rating_average):
-    #delete = recommended_DF.drop[userDF['weighted rating'].index < rating_average]
+    #This function will delete movies in recommended_DF if weighted rating is less than average rating of favorite films
     delete = recommended_DF[recommended_DF['weighted rating'] < rating_average]
 
     return delete
@@ -156,6 +156,5 @@ movie_DF = get_MovieList(API)
 userDF = get_MovieRating(movie_DF)
 favorite_film_average = get_averageRating(userDF)
 recommended_DF = get_recommendation(API, userDF)
-finallist = eliminate(recommended_DF, favorite_film_average) #this function will delete movies in recommended_DF
-                                        # if weighted rating is less than average rating of fav films
+finallist = eliminate(recommended_DF, favorite_film_average) 
 pr.pprint(finallist)
